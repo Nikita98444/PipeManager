@@ -1,0 +1,342 @@
+﻿@using PipeManager.Client.Contracts.Models
+@using PipeManager.Client.Services.Abstractions
+@using System.ComponentModel.DataAnnotations
+@inject IPipeApiClient PipeApi
+
+@if (Show)
+{
+    <div class="modal-backdrop fade show"
+         style="position:fixed; inset:0; z-index:1050;"></div>
+
+    <div style="
+         position:fixed; inset:0; display:flex;
+         justify-content:center; align-items:center; z-index:1060;">
+        <div class="modal-dialog modal-dialog-scrollable"
+             style="width:90%; max-width:800px; margin:0;">
+            <div class="modal-content shadow-lg"
+                 style="
+                     display:flex;
+                     flex-direction:column;
+                     max-height:80vh;
+                     border-radius:0.75rem;
+                     background:#fff;">
+                <!-- HEADER -->
+                <div class="modal-header ps-4 pe-3 py-3 border-0">
+                    <h4 class="modal-title fw-semibold m-0">@GetModalTitle()</h4>
+                    <button type="button" class="btn-close"
+                            aria-label="Close"
+                            @onclick="CloseModal" disabled="@isProcessing"></button>
+                </div>
+
+                <!-- BODY: scroll внутри, flex-рост -->
+                <div class="modal-body overflow-auto fs-5 px-4 py-3"
+                     style="flex:1 1 auto;">
+                    <EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+                        <!-- ID трубы (только для режима редактирования) -->
+                        @if (EditingPipe != null)
+                        {
+                            <div class="mb-3">
+                                <label for="pipeId" class="form-label">ID трубы</label>
+                                <input id="pipeId" class="form-control" value="@EditingPipe.PipeId" disabled />
+                            </div>
+                        }
+
+                        <!-- Номер трубы -->
+                        <div class="mb-3">
+                            <label for="pipeNumber" class="form-label">Номер трубы</label>
+                            <InputText id="pipeNumber" class="form-control" @bind-Value="formModel.PipeNumber" />
+                            <ValidationMessage For="@(() => formModel.PipeNumber)" />
+                        </div>
+
+                        <!-- Марка стали (выпадающий список) -->
+                        <div class="mb-3">
+                            <label for="steelGrade" class="form-label">Марка стали</label>
+                            <InputSelect id="steelGrade" class="form-select" @bind-Value="formModel.GradeId">
+                                @if (steelGrades != null)
+                                {
+                                    @foreach (var grade in steelGrades)
+                                    {
+                                        <option value="@grade.GradeId">@grade.GradeName</option>
+                                    }
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => formModel.GradeId)" />
+                        </div>
+
+                        <!-- Качество (выпадающий список) -->
+                        <div class="mb-3">
+                            <label for="quality" class="form-label">Качество</label>
+                            <select id="quality" class="form-select" @bind="selectedQuality">
+                                <option value="1">Годное</option>
+                                <option value="0">Брак</option>
+                            </select>
+                        </div>
+
+                        <!-- Длина трубы -->
+                        <div class="mb-3">
+                            <label for="lengthMeters" class="form-label">Длина (м)</label>
+                            <InputNumber id="lengthMeters" class="form-control" @bind-Value="formModel.LengthMeters" />
+                            <ValidationMessage For="@(() => formModel.LengthMeters)" />
+                        </div>
+
+                        <!-- Диаметр трубы -->
+                        <div class="mb-3">
+                            <label for="diameterMm" class="form-label">Диаметр (мм)</label>
+                            <InputNumber id="diameterMm" class="form-control" @bind-Value="formModel.DiameterMm" />
+                            <ValidationMessage For="@(() => formModel.DiameterMm)" />
+                        </div>
+
+                        <!-- Вес трубы -->
+                        <div class="mb-3">
+                            <label for="weightKg" class="form-label">Вес (кг)</label>
+                            <InputNumber id="weightKg" class="form-control" @bind-Value="formModel.WeightKg" />
+                            <ValidationMessage For="@(() => formModel.WeightKg)" />
+                        </div>
+
+                        <!-- Пакет (выпадающий список) -->
+                        <div class="mb-3">
+                            <label for="packageId" class="form-label">Пакет</label>
+                            <select id="packageId" class="form-select" @bind="selectedPackageId">
+                                <option value="">Без пакета</option>
+                                @if (packages != null)
+                                {
+                                    @foreach (var package in packages)
+                                    {
+                                        <option value="@package.PackageId">@package.PackageNumber (@package.PackageDate.ToString("dd.MM.yyyy"))</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseModal" disabled="@isProcessing">Отмена</button>
+                            <button type="submit" class="btn btn-primary" disabled="@isProcessing">Сохранить</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- ─────────── ОКНО ОШИБКИ ─────────── -->
+<ErrorModal Show="@(errorMessage is not null)"
+            Message="@errorMessage"
+            OnClose="CloseErrorModal" />
+
+@code {
+    [Parameter] public bool Show { get; set; }
+    [Parameter] public PipeItemDto? EditingPipe { get; set; }
+    [Parameter] public EventCallback<bool> OnClose { get; set; }
+    [Parameter] public EventCallback OnSaved { get; set; }
+
+    private PipeFormModel formModel = new();
+    private List<SteelGradeItemDto> steelGrades = new();
+    private List<PackageItemDto> packages = new();
+    private bool isProcessing;
+    private string? errorMessage;
+    private string selectedPackageId = string.Empty; // Для работы с nullable int в select
+    private string selectedQuality = "1"; // Для работы с качеством (1 - годное, 0 - брак)
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReferenceDataAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Show)
+        {
+            await LoadReferenceDataAsync();
+            InitializeFormModel();
+        }
+    }
+
+    private async Task LoadReferenceDataAsync()
+    {
+        try
+        {
+            var steelGradesResult = await PipeApi.GetSteelGradesAsync();
+            if (steelGradesResult.IsSuccess)
+                steelGrades = steelGradesResult.Data;
+
+            var packagesResult = await PipeApi.GetPackagesAsync();
+            if (packagesResult.IsSuccess)
+                packages = packagesResult.Data;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Ошибка загрузки справочников: {ex.Message}";
+        }
+    }
+
+    private void InitializeFormModel()
+    {
+        if (EditingPipe != null)
+        {
+
+            formModel = new PipeFormModel
+                {
+                    PipeNumber = EditingPipe.PipeNumber,
+                    IsGoodQuality = EditingPipe.IsGoodQuality,
+                    LengthMeters = EditingPipe.LengthMeters,
+                    DiameterMm = EditingPipe.DiameterMm,
+                    WeightKg = EditingPipe.WeightKg,
+                    GradeId = EditingPipe.GradeId
+                };
+
+            // Установка качества в выпадающем списке
+            selectedQuality = EditingPipe.IsGoodQuality ? "1" : "0";
+
+            // Для пакета также используем ID напрямую
+            selectedPackageId = EditingPipe.PackageId.HasValue ?
+                EditingPipe.PackageId.Value.ToString() : string.Empty;
+        }
+        else
+        {
+            // Режим добавления
+            formModel = new PipeFormModel
+                {
+                    IsGoodQuality = true, // По умолчанию - годное качество
+                    GradeId = steelGrades.FirstOrDefault()?.GradeId ?? 0,
+                    LengthMeters = 0,
+                    DiameterMm = 0,
+                    WeightKg = 0
+                };
+
+            // Годное качество по умолчанию
+            selectedQuality = "1";
+
+            // Без пакета по умолчанию
+            selectedPackageId = string.Empty;
+        }
+    }
+
+    private void CloseErrorModal() => errorMessage = null;
+
+    private string GetModalTitle()
+    {
+        return EditingPipe != null ? "Редактирование трубы" : "Добавление новой трубы";
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isProcessing = true;
+        //await Task.Delay(3000);
+
+        try
+        {
+            // Преобразуем строковое значение пакета в int?
+            int? packageIdValue = !string.IsNullOrEmpty(selectedPackageId)
+                ? int.Parse(selectedPackageId)
+                : null;
+
+            // Преобразуем строковое значение качества в bool
+            bool isGoodQuality = selectedQuality == "1";
+
+            if (EditingPipe != null)
+            {
+                // Обновление существующей трубы
+                var updatedPipe = new PipeItemDto
+                    {
+                        PipeId = EditingPipe.PipeId,
+                        PipeNumber = formModel.PipeNumber,
+                        IsGoodQuality = isGoodQuality,
+                        LengthMeters = formModel.LengthMeters,
+                        DiameterMm = formModel.DiameterMm,
+                        WeightKg = formModel.WeightKg,
+                        GradeId = formModel.GradeId,
+                        PackageId = packageIdValue,
+                        GradeName = steelGrades.FirstOrDefault(g => g.GradeId == formModel.GradeId)?.GradeName,
+                        PackageNumber = packageIdValue.HasValue
+                            ? packages.FirstOrDefault(p => p.PackageId == packageIdValue)?.PackageNumber
+                            : null,
+                        PackageDate = packageIdValue.HasValue
+                            ? packages.FirstOrDefault(p => p.PackageId == packageIdValue)?.PackageDate
+                            : null
+                    };
+
+                var result = await PipeApi.UpdatePipeAsync(updatedPipe);
+                if (result.IsSuccess)
+                {
+                    await OnSaved.InvokeAsync();
+                    await CloseModal();
+                }
+                else
+                {
+                    errorMessage = result.Error?.Message ?? "Ошибка обновления трубы";
+                }
+            }
+            else
+            {
+                // Добавление новой трубы
+                var newPipe = new AddPipeItemDto
+                    {
+                        PipeNumber = formModel.PipeNumber,
+                        IsGoodQuality = isGoodQuality,
+                        LengthMeters = formModel.LengthMeters,
+                        DiameterMm = formModel.DiameterMm,
+                        WeightKg = formModel.WeightKg,
+                        GradeId = formModel.GradeId,
+                        PackageId = packageIdValue
+                    };
+
+                var result = await PipeApi.AddPipeAsync(newPipe);
+                if (result.IsSuccess)
+                {
+                    await OnSaved.InvokeAsync();
+                    await CloseModal();
+                }
+                else
+                {
+                    errorMessage = result.Error?.Message ?? "Ошибка добавления трубы";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Произошла ошибка: {ex.Message}";
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+
+    private async Task CloseModal()
+    {
+        await OnClose.InvokeAsync(false);
+    }
+
+    // Модель формы с валидацией
+    private class PipeFormModel
+    {
+        [Required(ErrorMessage = "Номер трубы обязателен")]
+        [StringLength(50, ErrorMessage = "Номер трубы не должен превышать 50 символов")]
+        public string? PipeNumber { get; set; }
+
+        public bool IsGoodQuality { get; set; }
+
+        [Required(ErrorMessage = "Выберите марку стали")]
+        [Range(1, int.MaxValue, ErrorMessage = "Выберите марку стали")]
+        public int GradeId { get; set; }
+
+        [Required(ErrorMessage = "Длина трубы обязательна")]
+        [Range(0.001, double.MaxValue, ErrorMessage = "Длина должна быть положительным числом")]
+        [RegularExpression(@"^\d+([.,]\d{1,2})?$", ErrorMessage = "Допускается не более 2 знаков после запятой")]
+        public double LengthMeters { get; set; }
+
+        [Required(ErrorMessage = "Диаметр трубы обязателен")]
+        [Range(0.001, double.MaxValue, ErrorMessage = "Диаметр должен быть положительным числом")]
+        [RegularExpression(@"^\d+([.,]\d{1,2})?$", ErrorMessage = "Допускается не более 2 знаков после запятой")]
+        public double DiameterMm { get; set; }
+
+        [Required(ErrorMessage = "Вес трубы обязателен")]
+        [Range(0.001, double.MaxValue, ErrorMessage = "Вес должен быть положительным числом")]
+        [RegularExpression(@"^\d+([.,]\d{1,2})?$", ErrorMessage = "Допускается не более 2 знаков после запятой")]
+        public double WeightKg { get; set; }
+    }
+}

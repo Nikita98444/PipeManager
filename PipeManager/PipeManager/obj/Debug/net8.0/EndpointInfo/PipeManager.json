@@ -1,0 +1,863 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "PipeManager API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/Pipes/GetPipes": {
+      "get": {
+        "tags": [
+          "Трубы"
+        ],
+        "summary": "Получить список труб с информацией о марке и пакете",
+        "operationId": "GetPipes",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPipesResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPipesResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPipesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Pipes/DeletePipe": {
+      "delete": {
+        "tags": [
+          "Трубы"
+        ],
+        "summary": "Удаление записи из таблицы труб",
+        "operationId": "DeletePipe",
+        "parameters": [
+          {
+            "name": "pipeId",
+            "in": "query",
+            "description": "Ключ таблицы труб",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePipeResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePipeResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePipeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Pipes/GetSteelGrades": {
+      "get": {
+        "tags": [
+          "Трубы"
+        ],
+        "summary": "Получить список марок стали",
+        "operationId": "GetSteelGrades",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSteelGradesResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSteelGradesResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSteelGradesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Pipes/GetPackages": {
+      "get": {
+        "tags": [
+          "Трубы"
+        ],
+        "summary": "Получить список пакетов, в которые объединяются трубы",
+        "operationId": "GetPackages",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPackagesResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPackagesResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPackagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Pipes/DeletePackage": {
+      "delete": {
+        "tags": [
+          "Трубы"
+        ],
+        "summary": "Удаление записи из таблицы пакетов",
+        "operationId": "DeletePackage",
+        "parameters": [
+          {
+            "name": "packageId",
+            "in": "query",
+            "description": "Ключ таблицы пакетов",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePackageResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePackageResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePackageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Pipes/AddPackage": {
+      "post": {
+        "tags": [
+          "Трубы"
+        ],
+        "summary": "Добавление пакета",
+        "operationId": "AddPackage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPackageRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPackageRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPackageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddPackageResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddPackageResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddPackageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Pipes/UpdatePipe": {
+      "post": {
+        "tags": [
+          "Трубы"
+        ],
+        "summary": "Редактирование трубы",
+        "operationId": "UpdatePipe",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePipeRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePipeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePipeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePipeResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePipeResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePipeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Pipes/AddPipe": {
+      "post": {
+        "tags": [
+          "Трубы"
+        ],
+        "summary": "Добавление трубы",
+        "operationId": "AddPipe",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPipeRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPipeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPipeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddPipeResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddPipeResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddPipeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Pipes/UpdatePackage": {
+      "post": {
+        "tags": [
+          "Трубы"
+        ],
+        "summary": "Редактирование пакета",
+        "operationId": "UpdatePackage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePackageRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePackageRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePackageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePackageResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePackageResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePackageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddPackageRequest": {
+        "type": "object",
+        "properties": {
+          "packageNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "packageDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddPackageResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Ответ на запрос \"Добавление пакета\""
+      },
+      "AddPipeRequest": {
+        "type": "object",
+        "properties": {
+          "pipeNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "isGoodQuality": {
+            "type": "boolean"
+          },
+          "lengthMeters": {
+            "type": "number",
+            "format": "double"
+          },
+          "diameterMm": {
+            "type": "number",
+            "format": "double"
+          },
+          "weightKg": {
+            "type": "number",
+            "format": "double"
+          },
+          "packageId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "gradeId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddPipeResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Ответ на запрос \"Добавление трубы\""
+      },
+      "DeletePackageResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Ответ на запрос \"Удаление записи из таблицы пакетов"
+      },
+      "DeletePipeResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Ответ на запрос \"Удаление записи из таблицы труб"
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": { },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetPackagesResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PackageItem"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Получение списка данных о пакетах, в которые объединяются трубы"
+      },
+      "GetPipesResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PipeItem"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Получение списка данных о трубах"
+      },
+      "GetSteelGradesResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SteelGradeItem"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Получение списка данных о марках стали"
+      },
+      "PackageItem": {
+        "type": "object",
+        "properties": {
+          "packageId": {
+            "type": "integer",
+            "description": "ключ таблицы пакетов",
+            "format": "int32"
+          },
+          "packageNumber": {
+            "type": "string",
+            "description": "Номер пакета, в который включена труба (например, \"ПАКЕТ-001\").",
+            "nullable": true
+          },
+          "packageDate": {
+            "type": "string",
+            "description": "Дата формирования пакета, в который включена труба.",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Модель данных (DTO) для представления информации о пакетах, в которые объединяются трубы"
+      },
+      "PipeItem": {
+        "type": "object",
+        "properties": {
+          "pipeId": {
+            "type": "integer",
+            "description": "Уникальный идентификатор трубы в базе данных",
+            "format": "int32"
+          },
+          "pipeNumber": {
+            "type": "string",
+            "description": "Номер трубы (например, \"T-001\").",
+            "nullable": true
+          },
+          "isGoodQuality": {
+            "type": "boolean",
+            "description": "Флаг качества трубы: true - годная, false - брак."
+          },
+          "gradeId": {
+            "type": "integer",
+            "description": "id марки стали.",
+            "format": "int32"
+          },
+          "gradeName": {
+            "type": "string",
+            "description": "Наименование марки стали (например, \"Ст3сп\", \"09Г2С\").",
+            "nullable": true
+          },
+          "lengthMeters": {
+            "type": "number",
+            "description": "Длина трубы в метрах.",
+            "format": "double"
+          },
+          "diameterMm": {
+            "type": "number",
+            "description": "Диаметр трубы в миллиметрах.",
+            "format": "double"
+          },
+          "weightKg": {
+            "type": "number",
+            "description": "Вес трубы в килограммах.",
+            "format": "double"
+          },
+          "packageId": {
+            "type": "integer",
+            "description": "id пакета (может быть null).",
+            "format": "int32",
+            "nullable": true
+          },
+          "packageNumber": {
+            "type": "string",
+            "description": "Номер пакета, в который включена труба (например, \"ПАКЕТ-001\")",
+            "nullable": true
+          },
+          "packageDate": {
+            "type": "string",
+            "description": "Дата формирования пакета, в который включена труба",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Модель данных (DTO) для представления информации о трубе"
+      },
+      "SteelGradeItem": {
+        "type": "object",
+        "properties": {
+          "gradeId": {
+            "type": "integer",
+            "description": "Ключ таблицы марок стали",
+            "format": "int32"
+          },
+          "gradeName": {
+            "type": "string",
+            "description": "Уникальное наименование марки стали",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Модель данных (DTO) для представления информации о марках стали"
+      },
+      "UpdatePackageRequest": {
+        "type": "object",
+        "properties": {
+          "packageId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "packageNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "packageDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdatePackageResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Ответ на запрос \"Редактирование пакета\""
+      },
+      "UpdatePipeRequest": {
+        "type": "object",
+        "properties": {
+          "pipeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pipeNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "isGoodQuality": {
+            "type": "boolean"
+          },
+          "lengthMeters": {
+            "type": "number",
+            "format": "double"
+          },
+          "diameterMm": {
+            "type": "number",
+            "format": "double"
+          },
+          "weightKg": {
+            "type": "number",
+            "format": "double"
+          },
+          "packageId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "gradeId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdatePipeResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Ответ на запрос \"Редактирование трубы\""
+      }
+    }
+  }
+}

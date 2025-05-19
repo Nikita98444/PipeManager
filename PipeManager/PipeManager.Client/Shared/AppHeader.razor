@@ -1,0 +1,37 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom mb-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Pipe Information Manager</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav" aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                            Главная
+                        </NavLink>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                           role="button">Справочники</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <NavLink class="dropdown-item" href="/packages">
+                                    Пакеты
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

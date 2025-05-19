@@ -1,0 +1,22 @@
+﻿@* src/PipeManager/App.razor *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:,">
+
+    <!-- ваши стили -->
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="app.css" />
+
+    <HeadOutlet />
+</head>
+
+<body>
+    <Routes />           @* сюда «упадёт» Routes.razor *@
+
+    <script src="_framework/blazor.server.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

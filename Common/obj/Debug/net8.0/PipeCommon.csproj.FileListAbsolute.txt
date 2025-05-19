@@ -1,0 +1,12 @@
+C:\Users\PC\source\repos\PipeManager\Common\bin\Debug\net8.0\PipeCommon.deps.json
+C:\Users\PC\source\repos\PipeManager\Common\bin\Debug\net8.0\PipeCommon.dll
+C:\Users\PC\source\repos\PipeManager\Common\bin\Debug\net8.0\PipeCommon.pdb
+C:\Users\PC\source\repos\PipeManager\Common\obj\Debug\net8.0\PipeCommon.csproj.AssemblyReference.cache
+C:\Users\PC\source\repos\PipeManager\Common\obj\Debug\net8.0\PipeCommon.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\PC\source\repos\PipeManager\Common\obj\Debug\net8.0\PipeCommon.AssemblyInfoInputs.cache
+C:\Users\PC\source\repos\PipeManager\Common\obj\Debug\net8.0\PipeCommon.AssemblyInfo.cs
+C:\Users\PC\source\repos\PipeManager\Common\obj\Debug\net8.0\PipeCommon.csproj.CoreCompileInputs.cache
+C:\Users\PC\source\repos\PipeManager\Common\obj\Debug\net8.0\PipeCommon.dll
+C:\Users\PC\source\repos\PipeManager\Common\obj\Debug\net8.0\refint\PipeCommon.dll
+C:\Users\PC\source\repos\PipeManager\Common\obj\Debug\net8.0\PipeCommon.pdb
+C:\Users\PC\source\repos\PipeManager\Common\obj\Debug\net8.0\ref\PipeCommon.dll

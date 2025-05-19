@@ -1,0 +1,11 @@
+C:\Users\PC\source\repos\PipeManager\PipesService\bin\Debug\net8.0\PipesService.deps.json
+C:\Users\PC\source\repos\PipeManager\PipesService\bin\Debug\net8.0\PipesService.dll
+C:\Users\PC\source\repos\PipeManager\PipesService\bin\Debug\net8.0\PipesService.pdb
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipesService.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipesService.AssemblyInfoInputs.cache
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipesService.AssemblyInfo.cs
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipesService.csproj.CoreCompileInputs.cache
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipesService.dll
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\refint\PipesService.dll
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipesService.pdb
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\ref\PipesService.dll

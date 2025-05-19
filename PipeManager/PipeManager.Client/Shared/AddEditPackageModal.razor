@@ -1,0 +1,197 @@
+﻿@using PipeManager.Client.Contracts.Models
+@using PipeManager.Client.Services.Abstractions
+@using System.ComponentModel.DataAnnotations
+@inject IPipeApiClient PipeApi
+
+@if (Show)
+{
+    <div class="modal-backdrop fade show"
+         style="position:fixed; inset:0; z-index:1050;"></div>
+
+    <div style="
+         position:fixed; inset:0; display:flex;
+         justify-content:center; align-items:center; z-index:1060;">
+        <div class="modal-dialog modal-dialog-scrollable"
+             style="width:90%; max-width:800px; margin:0;">
+            <div class="modal-content shadow-lg"
+                 style="
+                     display:flex;
+                     flex-direction:column;
+                     max-height:80vh;
+                     border-radius:0.75rem;
+                     background:#fff;">
+                <!-- HEADER -->
+                <div class="modal-header ps-4 pe-3 py-3 border-0">
+                    <h4 class="modal-title fw-semibold m-0">@GetModalTitle()</h4>
+                    <button type="button" class="btn-close"
+                            aria-label="Close"
+                            @onclick="CloseModal" disabled="@isProcessing"></button>
+                </div>
+
+                <!-- BODY: scroll внутри, flex-рост -->
+                <div class="modal-body overflow-auto fs-5 px-4 py-3"
+                     style="flex:1 1 auto;">
+                    <EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+                        <!-- ID пакета (только для режима редактирования) -->
+                        @if (EditingPackage != null)
+                        {
+                            <div class="mb-3">
+                                <label for="packageId" class="form-label">ID пакета</label>
+                                <input id="packageId" class="form-control" value="@EditingPackage.PackageId" disabled />
+                            </div>
+                        }
+
+                        <!-- Номер пакета -->
+                        <div class="mb-3">
+                            <label for="packageNumber" class="form-label">Номер пакета</label>
+                            <InputText id="packageNumber" class="form-control" @bind-Value="formModel.PackageNumber" />
+                            <ValidationMessage For="@(() => formModel.PackageNumber)" />
+                        </div>
+
+                        <!-- Дата формирования пакета -->
+                        <div class="mb-3">
+                            <label for="packageDate" class="form-label">Дата формирования</label>
+                            <InputDate id="packageDate" class="form-control" @bind-Value="formModel.PackageDate" />
+                            <ValidationMessage For="@(() => formModel.PackageDate)" />
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseModal" disabled="@isProcessing">Отмена</button>
+                            <button type="submit" class="btn btn-primary" disabled="@isProcessing">Сохранить</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<!-- ─────────── ОКНО ОШИБКИ ─────────── -->
+<ErrorModal Show="@(errorMessage is not null)"
+            Message="@errorMessage"
+            OnClose="CloseErrorModal" />
+
+@code {
+    [Parameter] public bool Show { get; set; }
+    [Parameter] public PackageItemDto? EditingPackage { get; set; }
+    [Parameter] public EventCallback<bool> OnClose { get; set; }
+    [Parameter] public EventCallback OnSaved { get; set; }
+
+    private PackageFormModel formModel = new();
+    private bool isProcessing;
+    private string? errorMessage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Show)
+        {
+            InitializeFormModel();
+        }
+    }
+
+    private void InitializeFormModel()
+    {
+        if (EditingPackage != null)
+        {
+            // Режим редактирования
+            formModel = new PackageFormModel
+                {
+                    PackageNumber = EditingPackage.PackageNumber,
+                    PackageDate = EditingPackage.PackageDate
+                };
+        }
+        else
+        {
+            // Режим добавления
+            formModel = new PackageFormModel
+                {
+                    PackageDate = DateTime.Today
+                };
+        }
+    }
+
+    private void CloseErrorModal() => errorMessage = null;
+
+    private string GetModalTitle()
+    {
+        return EditingPackage != null ? "Редактирование пакета" : "Добавление нового пакета";
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isProcessing = true;
+
+        try
+        {
+            if (EditingPackage != null)
+            {
+                // Обновление существующего пакета
+                var updatedPackage = new PackageItemDto
+                    {
+                        PackageId = EditingPackage.PackageId,
+                        PackageNumber = formModel.PackageNumber,
+                        PackageDate = formModel.PackageDate
+                    };
+
+                var result = await PipeApi.UpdatePackageAsync(updatedPackage);
+                if (result.IsSuccess)
+                {
+                    await OnSaved.InvokeAsync();
+                    await CloseModal();
+                }
+                else
+                {
+                    errorMessage = result.Error?.Message ?? "Ошибка обновления пакета";
+                }
+            }
+            else
+            {
+                // Добавление нового пакета
+                var newPackage = new AddPackageItemDto
+                    {
+                        PackageNumber = formModel.PackageNumber,
+                        PackageDate = formModel.PackageDate
+                    };
+
+                var result = await PipeApi.AddPackageAsync(newPackage);
+                if (result.IsSuccess)
+                {
+                    await OnSaved.InvokeAsync();
+                    await CloseModal();
+                }
+                else
+                {
+                    errorMessage = result.Error?.Message ?? "Ошибка добавления пакета";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Произошла ошибка: {ex.Message}";
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+
+    private async Task CloseModal()
+    {
+        await OnClose.InvokeAsync(false);
+    }
+
+    // Модель формы с валидацией
+    private class PackageFormModel
+    {
+        [Required(ErrorMessage = "Номер пакета обязателен")]
+        [StringLength(50, ErrorMessage = "Номер пакета не должен превышать 50 символов")]
+        public string PackageNumber { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Дата формирования пакета обязательна")]
+        public DateTime PackageDate { get; set; }
+    }
+}

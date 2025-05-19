@@ -1,0 +1,197 @@
+﻿@page "/packages"
+@rendermode InteractiveServer
+@inject IPipeApiClient PipeApi
+@using PipeManager.Client.Shared
+
+<PageTitle>Пакеты</PageTitle>
+
+
+<div class="d-flex h-100 w-100 justify-content-center">
+    <div class="d-flex flex-column h-100" style="width: 70%; ">
+        <div class="d-flex justify-content-between mb-2">
+            <button class="btn btn-outline-success" @onclick="AddNew" disabled="@isLoading" title="Добавить новый пакет">
+                ➕ Добавить
+            </button>
+            <button class="btn btn-outline-success" @onclick="async () => await LoadPackagesAsync()" disabled="@isLoading" title="Обновить список пакетов">
+                🔄 Обновить
+            </button>
+        </div>
+
+        <div class="flex-grow-1 overflow-auto">
+            <table class="table table-bordered table-hover fs-5 mb-0">
+                <thead class="bg-light sticky-top">
+                    <tr>
+                        <th>Номер пакета</th>
+                        <th>Дата формирования пакета</th>
+                        <th style="width:110px;">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in packages)
+                    {
+                        <tr>
+                            <td>@(p.PackageNumber)</td>
+                            <td>@(p.PackageDate.ToString("dd.MM.yyyy"))</td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm me-1" title="Редактировать"
+                                        @onclick:stopPropagation="true" @onclick="() => Edit(p)" disabled="@isLoading">
+                                    ✏
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" title="Удалить"
+                                        @onclick:stopPropagation="true" @onclick="async () => await DeletePackage(p.PackageId)"
+                                        disabled="@isLoading">
+                                    ❌
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<AddEditPackageModal Show="@showPackagesModal"
+                     EditingPackage="@editing"
+                     OnClose="() => showPackagesModal = false"
+                     OnSaved="async () => await LoadPackagesAsync()" />
+
+<!-- ─────────── ОКНО ОШИБКИ ─────────── -->
+<ErrorModal Show="@(error is not null)"
+            Message="@error"
+            OnClose="CloseErrorModal" />
+
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    main {
+        height: calc(100vh - 80px - 40px);
+    }
+
+    .h-100 {
+        height: 100%;
+    }
+
+    .flex-grow-1 {
+        flex-grow: 1;
+    }
+
+    .overflow-auto {
+        overflow-y: auto;
+        position: relative;
+        background-color: #f8f9fa;
+        border-top: none;
+        box-shadow: none;
+    }
+
+    table.table {
+        border-collapse: collapse;
+        border-top: none;
+        width: 100%;
+        margin-top: 0;
+    }
+
+        table.table thead.sticky-top {
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            border-top: none;
+            margin-top: 0;
+            box-shadow: none;
+            border-spacing: 0;
+        }
+
+            table.table thead.sticky-top tr {
+                border-bottom: 1px solid #dee2e6;
+                border-collapse: collapse;
+                margin: 0;
+                padding: 0;
+                border-top: none;
+                background-color: #f8f9fa;
+            }
+
+            table.table thead.sticky-top th {
+                border: 1px solid #dee2e6;
+                border-top: none;
+                background-color: #f8f9fa;
+                padding: 0.5rem;
+                border-left: none;
+                border-right: none;
+            }
+
+            /* Правило для устранения артефактов позиционирования */
+            table.table thead.sticky-top::before,
+            table.table thead.sticky-top::after {
+                content: none;
+            }
+
+    /* Дополнительные исправления */
+    .flex-grow-1.overflow-auto {
+        border-top: none;
+        margin-top: 0;
+        padding-top: 0;
+    }
+</style>
+
+@code {
+    private List<PackageItemDto> packages = new();
+    private PackageItemDto? editing;     // null => добавление
+
+    private bool showPackagesModal;
+    private string? error;
+    private bool isLoading;
+
+
+    /* ───────── lifecycle ───────── */
+    protected override async Task OnInitializedAsync() => await LoadPackagesAsync();
+
+    private async Task LoadPackagesAsync()
+    {
+        isLoading = true; error = null;
+
+        try
+        {
+            var res = await PipeApi.GetPackagesAsync();
+            packages = res.IsSuccess ? res.Data : new();
+            if (!res.IsSuccess) error = res.Error?.Message ?? "Ошибка загрузки данных";
+        }
+        catch (Exception ex) { error = $"Произошла ошибка: {ex.Message}"; }
+        finally { isLoading = false; }
+    }
+
+    private async Task DeletePackage(int id)
+    {
+        isLoading = true; error = null;
+        try
+        {
+            var res = await PipeApi.DeletePackageAsync(id);
+            if (res.IsSuccess) await LoadPackagesAsync();
+            else error = res.Error?.Message ?? "Не удалось удалить пакет";
+        }
+        catch (Exception ex) { error = $"Ошибка при удалении: {ex.Message}"; }
+        finally { isLoading = false; }
+    }
+
+    /* открыть окно «Добавить» */
+    private void AddNew()
+    {
+        editing = null;
+        showPackagesModal = true;
+    }
+
+    /* открыть окно «Редактировать» */
+    private void Edit(PackageItemDto dto)
+    {
+        editing = dto;
+        showPackagesModal = true;
+    }
+
+    private void CloseErrorModal() => error = null;
+
+
+}

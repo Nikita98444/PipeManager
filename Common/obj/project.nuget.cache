@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "dgSpecHash": "uIdQ/zwaMW8=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\PC\\source\\repos\\PipeManager\\Common\\PipeCommon.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\PC\\.nuget\\packages\\dapper\\2.1.66\\dapper.2.1.66.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\faithlife.utility.dapper\\2.0.0\\faithlife.utility.dapper.2.0.0.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\mediatr\\12.5.0\\mediatr.12.5.0.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\microsoft.extensions.configuration\\9.0.4\\microsoft.extensions.configuration.9.0.4.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\9.0.4\\microsoft.extensions.configuration.abstractions.9.0.4.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.2\\microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.2\\microsoft.extensions.logging.abstractions.8.0.2.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.4\\microsoft.extensions.primitives.9.0.4.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\miniprofiler.aspnetcore\\4.5.4\\miniprofiler.aspnetcore.4.5.4.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\miniprofiler.shared\\4.5.4\\miniprofiler.shared.4.5.4.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\npgsql\\9.0.3\\npgsql.9.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,15 @@
+C:\Users\PC\source\repos\PipeManager\PipesService\bin\Debug\net8.0\PipeService.deps.json
+C:\Users\PC\source\repos\PipeManager\PipesService\bin\Debug\net8.0\PipeService.dll
+C:\Users\PC\source\repos\PipeManager\PipesService\bin\Debug\net8.0\PipeService.pdb
+C:\Users\PC\source\repos\PipeManager\PipesService\bin\Debug\net8.0\PipeCommon.dll
+C:\Users\PC\source\repos\PipeManager\PipesService\bin\Debug\net8.0\PipeCommon.pdb
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipeService.csproj.AssemblyReference.cache
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipeService.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipeService.AssemblyInfoInputs.cache
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipeService.AssemblyInfo.cs
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipeService.csproj.CoreCompileInputs.cache
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipeServ.B55731D7.Up2Date
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipeService.dll
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\refint\PipeService.dll
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\PipeService.pdb
+C:\Users\PC\source\repos\PipeManager\PipesService\obj\Debug\net8.0\ref\PipeService.dll

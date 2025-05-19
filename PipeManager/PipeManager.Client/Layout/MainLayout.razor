@@ -1,0 +1,12 @@
+﻿@inherits LayoutComponentBase
+@using PipeManager.Client.Shared    @* где лежат AppHeader/AppFooter *@
+
+<div class="d-flex flex-column min-vh-100">
+    <AppHeader />
+
+    <main class="flex-grow-1 d-flex py-2 px-3">
+        @Body
+    </main>
+
+    <AppFooter />
+</div>

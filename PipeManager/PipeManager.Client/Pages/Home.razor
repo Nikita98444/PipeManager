@@ -1,0 +1,362 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject IPipeApiClient PipeApi
+@using PipeManager.Client.Shared
+
+<PageTitle>Главная</PageTitle>
+
+<div class="d-flex h-100 w-100">
+    <div class="bg-light border-end h-100 me-3" style="flex: 0 0 12.5%; max-width: 12.5%;">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">Фильтры</span>
+                    <button class="btn btn-sm btn-outline-secondary" @onclick="ResetFilters" title="Сбросить фильтры">
+                        ↺ Сбросить
+                    </button>
+                </div>
+            </div>
+            <div class="card-body overflow-auto">
+                <div class="mb-3">
+                    <label for="pipeNumberFilter" class="form-label">Номер трубы</label>
+                    <input type="text" id="pipeNumberFilter" class="form-control"
+                           @bind="pipeNumberFilter" @bind:event="oninput"
+                           placeholder="Введите номер...">
+                </div>
+                <div class="mb-3">
+                    <label for="gradeFilter" class="form-label">Марка стали</label>
+                    <select id="gradeFilter" class="form-select" @bind="gradeFilter">
+                        <option value="">Все</option>
+                        @foreach (var grade in GetUniqueGrades())
+                        {
+                            <option value="@grade">@grade</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="qualityFilter" class="form-label">Качество</label>
+                    <select id="qualityFilter" class="form-select" @bind="qualityFilter">
+                        <option value="">Все</option>
+                        <option value="true">Годная</option>
+                        <option value="false">Брак</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="packageFilter" class="form-label">Пакет</label>
+                    <select id="packageFilter" class="form-select" @bind="packageFilter">
+                        <option value="">Все</option>
+                        <option value="-">Без пакета</option>
+                        @foreach (var package in GetUniquePackages())
+                        {
+                            <option value="@package">@package</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-column h-100 flex-grow-1">
+        <div class="d-flex justify-content-between mb-2">
+            <button class="btn btn-outline-success" @onclick="AddNew" disabled="@isLoading" title="Добавить новую трубу">
+                ➕ Добавить
+            </button>
+            <button class="btn btn-outline-success" @onclick="async () => await LoadPipesAsync()" disabled="@isLoading" title="Обновить список труб">
+                🔄 Обновить
+            </button>
+        </div>
+
+        <div class="flex-grow-1 overflow-auto ">
+            <table class="table table-bordered table-hover fs-5 mb-0 w-100">
+                <thead class="bg-light sticky-top">
+                    <tr>
+                        <th>Номер</th>
+                        <th>Марка стали</th>
+                        <th>Качество</th>
+                        <th>Длина, м</th>
+                        <th>Диаметр, мм</th>
+                        <th>Вес, кг</th>
+                        <th>Пакет</th>
+                        <th>Дата пакета</th>
+                        <th style="width:110px;">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in filteredPipes)
+                    {
+                        <tr>
+                            <td>@p.PipeNumber</td>
+                            <td>@p.GradeName</td>
+                            <td>@p.QualityDisplay</td>
+                            <td>@p.LengthMeters</td>
+                            <td>@p.DiameterMm</td>
+                            <td>@p.WeightKg</td>
+                            <td>@(p.PackageNumber ?? "-")</td>
+                            <td>@(p.PackageDate?.ToString("dd.MM.yyyy") ?? "-")</td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm me-1" title="Редактировать"
+                                        @onclick:stopPropagation="true" @onclick="() => Edit(p)" disabled="@isLoading">
+                                    ✏
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" title="Удалить"
+                                        @onclick:stopPropagation="true" @onclick="async () => await DeletePipe(p.PipeId)"
+                                        disabled="@(isLoading || p.PackageNumber is not null)">
+                                    ❌
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card mt-1 border-top-0 rounded-0 rounded-bottom shadow-sm">
+            <div class="card-body py-2">
+                <div class="row align-items-center text-center fs-5">
+                    <div class="col-md-3">
+                        <div class="text-muted small">Всего труб</div>
+                        <div class="fw-bold">@filteredPipes.Count</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-muted small">Годных</div>
+                        <div class="fw-bold text-success">@filteredPipes.Count(p => p.IsGoodQuality)</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-muted small">Брак</div>
+                        <div class="fw-bold text-danger">@filteredPipes.Count(p => !p.IsGoodQuality)</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-muted small">Общий вес</div>
+                        <div class="fw-bold">@filteredPipes.Sum(p => p.WeightKg).ToString("N2") кг</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+
+    main {
+        height: calc(100vh - 80px - 40px);
+    }
+
+    .h-100 {
+        height: 100%;
+    }
+
+    .flex-grow-1 {
+        flex-grow: 1;
+    }
+
+    .overflow-auto {
+        overflow-y: auto;
+        position: relative;
+        background-color: #f8f9fa;
+        border-top: none;
+        box-shadow: none;
+    }
+
+    table.table {
+        border-collapse: collapse;
+        border-top: none;
+        width: 100%;
+        margin-top: 0;
+    }
+
+    table.table thead.sticky-top {
+        background-color: #f8f9fa;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        border-top: none;
+        margin-top: 0;
+        box-shadow: none;
+        border-spacing: 0;
+    }
+
+    table.table thead.sticky-top tr {
+        border-bottom: 1px solid #dee2e6;
+        border-collapse: collapse;
+        margin: 0;
+        padding: 0;
+        border-top: none;
+        background-color: #f8f9fa;
+    }
+
+    table.table thead.sticky-top th {
+        border: 1px solid #dee2e6;
+        border-top: none;
+        background-color: #f8f9fa;
+        padding: 0.5rem;
+        border-left: none;
+        border-right: none;
+    }
+
+    /* Правило для устранения артефактов позиционирования */
+    table.table thead.sticky-top::before,
+    table.table thead.sticky-top::after {
+        content: none;
+    }
+
+    /* Дополнительные исправления */
+    .flex-grow-1.overflow-auto {
+        border-top: none;
+        margin-top: 0;
+        padding-top: 0;
+    }
+</style>
+
+<AddEditPipeModal Show="@showPipeModal"
+                  EditingPipe="@editing"
+                  OnClose="() => showPipeModal = false"
+                  OnSaved="async () => await LoadPipesAsync()" />
+
+<!-- ─────────── ОКНО ОШИБКИ ─────────── -->
+<ErrorModal Show="@(error is not null)"
+            Message="@error"
+            OnClose="CloseErrorModal" />
+
+
+@code {
+    /* ───────── данные ───────── */
+    private List<PipeItemDto> pipes = new();
+    private string? error;
+    private bool isLoading;
+
+    private bool showPipeModal;
+    private PipeItemDto? editing;     // null => добавление
+
+    /* ───────── фильтры ───────── */
+    private string pipeNumberFilter = "";
+    private string gradeFilter = "";
+    private string qualityFilter = "";
+    private string packageFilter = "";
+
+    /* ───────── отфильтрованные данные ───────── */
+    private List<PipeItemDto> filteredPipes => ApplyFilters();
+
+    /* ───────── lifecycle ───────── */
+    protected override async Task OnInitializedAsync() => await LoadPipesAsync();
+
+    private async Task LoadPipesAsync()
+    {
+        isLoading = true; error = null;
+
+        try
+        {
+            var res = await PipeApi.GetPipesAsync();
+            pipes = res.IsSuccess ? res.Data : new();
+            if (!res.IsSuccess) error = res.Error?.Message ?? "Ошибка загрузки данных";
+        }
+        catch (Exception ex) { error = $"Произошла ошибка: {ex.Message}"; }
+        finally { isLoading = false; }
+    }
+
+    private async Task DeletePipe(int id)
+    {
+        isLoading = true; error = null;
+        try
+        {
+            var res = await PipeApi.DeletePipeAsync(id);
+            if (res.IsSuccess) await LoadPipesAsync();
+            else error = res.Error?.Message ?? "Не удалось удалить трубу";
+        }
+        catch (Exception ex) { error = $"Ошибка при удалении: {ex.Message}"; }
+        finally { isLoading = false; }
+    }
+
+    /* открыть окно «Добавить» */
+    private void AddNew()
+    {
+        editing = null;
+        showPipeModal = true;
+    }
+
+    /* открыть окно «Редактировать» */
+    private void Edit(PipeItemDto dto)
+    {
+        editing = dto;
+        showPipeModal = true;
+    }
+
+    private void CloseErrorModal() => error = null;
+
+    /* ───────── методы для фильтрации ───────── */
+
+    // Список уникальных марок стали для фильтра
+    private List<string> GetUniqueGrades()
+    {
+        return pipes
+            .Where(p => p.GradeName != null)
+            .Select(p => p.GradeName)
+            .Distinct()
+            .OrderBy(g => g)
+            .ToList();
+    }
+
+    // Список уникальных пакетов для фильтра
+    private List<string> GetUniquePackages()
+    {
+        return pipes
+            .Where(p => p.PackageNumber != null)
+            .Select(p => p.PackageNumber)
+            .Distinct()
+            .OrderBy(p => p)
+            .ToList();
+    }
+
+    // Применение всех фильтров к списку труб
+    private List<PipeItemDto> ApplyFilters()
+    {
+        var filtered = pipes;
+
+        // Фильтр по номеру трубы
+        if (!string.IsNullOrWhiteSpace(pipeNumberFilter))
+        {
+            filtered = filtered.Where(p => p.PipeNumber != null &&
+                p.PipeNumber.Contains(pipeNumberFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        // Фильтр по марке стали
+        if (!string.IsNullOrWhiteSpace(gradeFilter))
+        {
+            filtered = filtered.Where(p => p.GradeName == gradeFilter).ToList();
+        }
+
+        // Фильтр по качеству
+        if (!string.IsNullOrWhiteSpace(qualityFilter))
+        {
+            bool isGoodQuality = qualityFilter == "true";
+            filtered = filtered.Where(p => p.IsGoodQuality == isGoodQuality).ToList();
+        }
+
+        // Фильтр по пакету
+        if (!string.IsNullOrWhiteSpace(packageFilter))
+        {
+            if (packageFilter == "-")
+            {
+                filtered = filtered.Where(p => p.PackageNumber == null).ToList();
+            }
+            else
+            {
+                filtered = filtered.Where(p => p.PackageNumber == packageFilter).ToList();
+            }
+        }
+
+        return filtered;
+    }
+
+    // Сброс всех фильтров
+    private void ResetFilters()
+    {
+        pipeNumberFilter = "";
+        gradeFilter = "";
+        qualityFilter = "";
+        packageFilter = "";
+    }
+}
