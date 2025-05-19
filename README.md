@@ -10,7 +10,7 @@ https://github.com/user-attachments/assets/537cc95e-dc7a-4917-8630-785f10b9699b
 ![использование ApiBaseUrl](https://github.com/user-attachments/assets/f2b664c8-5fd0-4152-9036-514e247b2c59)
 
 
-БД
+БД проекта (PostgreSQL)
 ------------------------------------------------
 ```sql
 [Uploading Scri-- Создаем схему pipe_Information, если она еще не существует
